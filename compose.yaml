@@ -1,5 +1,3 @@
-name: adcraft
-
 services:
   agent:
     build:
@@ -9,7 +7,7 @@ services:
       AGENT_RUNTIME_HOST: 0.0.0.0
       AGENT_RUNTIME_PORT: 8765
       AGENT_RUNTIME_PYTHON_BASE_URL: http://api:8000
-      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:?Set ADCRAFT_AGENT_RUNTIME_TOKEN in Coolify.}
+      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:-adcraft-local-internal-token}
     init: true
     expose:
       - "8765"
@@ -29,16 +27,13 @@ services:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
-    env_file:
-      - path: ./apps/api/.env
-        required: false
     environment:
       HOME: /tmp
       MEDIA_DATA_DIR: /app/data
-      LOCAL_SETTINGS_ALLOWED_ORIGINS: "${ADCRAFT_PUBLIC_ORIGIN:?Set ADCRAFT_PUBLIC_ORIGIN in Coolify, e.g. http://203.0.113.10:8080}"
+      LOCAL_SETTINGS_ALLOWED_ORIGINS: "${ADCRAFT_PUBLIC_ORIGIN:-http://127.0.0.1:8080}"
       AGENT_RUNTIME_BASE_URL: http://agent:8765
-      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:?Set ADCRAFT_AGENT_RUNTIME_TOKEN in Coolify.}
-    user: "${ADCRAFT_UID:-1000}:${ADCRAFT_GID:-1000}"
+      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:-adcraft-local-internal-token}
+    user: "${ADCRAFT_UID:-0}:${ADCRAFT_GID:-0}"
     init: true
     expose:
       - "8000"
@@ -85,4 +80,3 @@ services:
 
 networks:
   adcraft-internal:
-    name: adcraft-internal
