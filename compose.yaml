@@ -9,7 +9,7 @@ services:
       AGENT_RUNTIME_HOST: 0.0.0.0
       AGENT_RUNTIME_PORT: 8765
       AGENT_RUNTIME_PYTHON_BASE_URL: http://api:8000
-      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:?Run the deployment launcher to create the internal Agent token.}
+      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:?Set ADCRAFT_AGENT_RUNTIME_TOKEN in Coolify.}
     init: true
     expose:
       - "8765"
@@ -30,13 +30,14 @@ services:
       context: ./apps/api
       dockerfile: Dockerfile
     env_file:
-      - ./apps/api/.env
+      - path: ./apps/api/.env
+        required: false
     environment:
       HOME: /tmp
       MEDIA_DATA_DIR: /app/data
-      LOCAL_SETTINGS_ALLOWED_ORIGINS: "http://127.0.0.1:${ADCRAFT_PORT},http://localhost:${ADCRAFT_PORT}"
+      LOCAL_SETTINGS_ALLOWED_ORIGINS: "${ADCRAFT_PUBLIC_ORIGIN:?Set ADCRAFT_PUBLIC_ORIGIN in Coolify, e.g. https://adcraft.example.com}"
       AGENT_RUNTIME_BASE_URL: http://agent:8765
-      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:?Run the deployment launcher to create the internal Agent token.}
+      AGENT_RUNTIME_INTERNAL_TOKEN: ${ADCRAFT_AGENT_RUNTIME_TOKEN:?Set ADCRAFT_AGENT_RUNTIME_TOKEN in Coolify.}
     user: "${ADCRAFT_UID:-1000}:${ADCRAFT_GID:-1000}"
     init: true
     expose:
@@ -68,8 +69,8 @@ services:
     depends_on:
       api:
         condition: service_healthy
-    ports:
-      - "127.0.0.1:${ADCRAFT_PORT:-8080}:80"
+    expose:
+      - "80"
     volumes:
       - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     healthcheck:
