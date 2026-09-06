@@ -9,7 +9,10 @@ COPY agent/skills ./skills
 COPY agent/scripts/verify-skills.ts ./scripts/verify-skills.ts
 COPY agent/tsconfig.json ./
 RUN npm run verify:skills
-RUN npm run build
+RUN rm -rf scripts \
+    && npm run build \
+    && mkdir -p dist/generated \
+    && cp src/generated/*.json dist/generated/
 RUN npm prune --omit=dev
 
 FROM node:22-bookworm-slim
