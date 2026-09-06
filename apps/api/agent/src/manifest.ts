@@ -2,7 +2,14 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { PiRuntimeManifest } from "../scripts/generate-runtime-manifest.js";
+export interface PiRuntimeManifest {
+  readonly runtime_version: string;
+  readonly protocol_version: "1";
+  readonly contract_digest: string;
+  readonly capability_digest: string;
+  readonly prompt_digest: string;
+  readonly skill_digest: string;
+}
 
 let cached: PiRuntimeManifest | undefined;
 
